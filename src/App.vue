@@ -45,6 +45,13 @@ export default {
   },
   mounted() {
     this.fetchPosts()
+  },
+  computed: {
+    sortedPosts(){
+      return [...this.posts].sort((post1, post2) => post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+    }
+  },
+  watch: {
   }
 }
 </script>
@@ -66,8 +73,7 @@ export default {
           @create="createPost"
       />
     </MyDialog>
-    <PostForm @create="createPost"/>
-    <PostList v-bind:posts="posts"
+    <PostList v-bind:posts="sortedPosts"
               @remove="removePost"
               v-if="!isPostsLoading"
     />
