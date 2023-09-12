@@ -4,13 +4,20 @@ import PostList from "@/components/PostList.vue";
 import MyDialog from "@/components/UI/MyDialog.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import axios from "axios";
+import MySelect from "@/components/UI/MySelect.vue";
 
 export default {
-  components: {MyButton, MyDialog, PostList, PostForm},
+  components: {MySelect, MyButton, MyDialog, PostList, PostForm},
   data() {
     return {
       posts: [],
       dialogVisible: false,
+      isPostsLoading: false,
+      selectedSort: '',
+      sortOptions: [
+        {value: 'title', name: 'По назві'},
+        {value: 'body', name: 'По змісту'}
+      ]
     }
   },
   methods: {
@@ -22,26 +29,38 @@ export default {
       this.posts = this.posts.filter(p => p.id !== post.id)
     },
     showDialog() {
-      this.dialogVisible = true
+      this.dialogVisible = true;
     },
     async fetchPosts() {
       try {
+        this.isPostsLoading = true;
         const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
-        this.posts = response.data
+        this.posts = response.data;
       } catch (e) {
         alert('Помилка')
+      } finally {
+        this.isPostsLoading = false;
       }
-    }
+    },
+  },
+  mounted() {
+    this.fetchPosts()
   }
 }
 </script>
 <template>
   <div class="app">
     <h1>Сторінка з постами</h1>
-    <MyButton
-        @click="showDialog"
-    >Створити пост
-    </MyButton>
+    <div class="app__btns">
+      <MyButton
+          @click="showDialog"
+      >Створити пост
+      </MyButton>
+      <MySelect
+          v-model="selectedSort"
+          :options="sortOptions"
+      />
+    </div>
     <MyDialog v-model:show="dialogVisible">
       <post-form
           @create="createPost"
@@ -50,7 +69,9 @@ export default {
     <PostForm @create="createPost"/>
     <PostList v-bind:posts="posts"
               @remove="removePost"
+              v-if="!isPostsLoading"
     />
+    <div v-else>Завантаження...</div>
   </div>
 </template>
 
@@ -63,6 +84,11 @@ export default {
 
 .app {
   padding: 20px;
+}
+
+.app__btns {
+  display: flex;
+  justify-content: space-between;
 }
 
 
