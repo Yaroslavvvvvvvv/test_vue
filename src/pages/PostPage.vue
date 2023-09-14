@@ -73,17 +73,6 @@ export default {
   mounted() {
     this.fetchPosts()
     console.log(this.$refs.observer)
-    let options = {
-      rootMargin: "0px",
-      threshold: 1.0,
-    };
-    const callback = (entries, observer) => {
-      if (entries[0]. isIntersecting && this.page < this.totalPages) {
-        this.loadMorePosts()
-      }
-    }
-    let observer = new IntersectionObserver(callback, options);
-    observer.observe(this.$refs.observer)
   },
   computed: {
     sortedPosts() {
@@ -102,6 +91,7 @@ export default {
     <MyInput
         v-model="searchQuery"
         placeholder="Пошук..."
+        v-focus
     />
     <div class="app__btns">
       <MyButton
@@ -123,7 +113,7 @@ export default {
               v-if="!isPostsLoading"
     />
     <div v-else>Завантаження...</div>
-    <div ref="observer" class="observer"></div>
+    <div v-intersection="loadMorePosts" class="observer"></div>
   </div>
 </template>
 

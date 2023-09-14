@@ -30,6 +30,7 @@ export default {
   <form @submit.prevent>
     <h4>Створення поста</h4>
     <MyInput
+        v-focus
         v-model="post.title"
         type="text"
         placeholder="Назва"/>
